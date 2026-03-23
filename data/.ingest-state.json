@@ -1,0 +1,40 @@
+{
+  "guidanceCompleted": [
+    "CFCS-VEJ-forebyggelse-vejledninger-rejser",
+    "CFCS-VEJ-forebyggelse-vejledninger-handbog-i-sikkerhed-for-mobile-enh",
+    "CFCS-VEJ-forebyggelse-vejledninger-kom-i-gang-med-at-beskytte-iot",
+    "CFCS-VEJ-forebyggelse-vejledninger-distancearbejde-opdater-sikkerheds",
+    "CFCS-VEJ-forebyggelse-vejledninger-vejledning-metode-til-at-arbejde-m",
+    "CFCS-VEJ-forebyggelse-nationale-anbefalinger",
+    "CFCS-VEJ-forebyggelse-nationale-anbefalinger-logning",
+    "CFCS-VEJ-forebyggelse-nationale-anbefalinger-logning-e-mail-logning",
+    "CFCS-VEJ-forebyggelse-guidance-passwords",
+    "CFCS-VEJ-temasider",
+    "CFCS-PDF-cyberforsvar-der-virker-2023",
+    "CFCS-PDF-passwordsikkerhed-oktober-2023",
+    "CFCS-PDF-cfcs-phishingvejledning-2022",
+    "CFCS-PDF-cfcs-vejledning-beskyt-iot-enheder",
+    "CFCS-PDF-cybersikkerhed-i-overvagningsudstyr",
+    "CFCS-PDF-cybersikkerhed-for-bestyrelser",
+    "CFCS-PDF-cybersikkerhed-pa-rejsen-organisationen"
+  ],
+  "advisoriesCompleted": [
+    "CFCS-TV-cybertruslen-trusselsvurderinger",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-cybertruslen-mod-danmark",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-finans",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-soefart",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-transport",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-forsvarsindustrien",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-tele",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-trusselsvurdering-cybertrus",
+    "CFCS-TV-cybertruslen-trusselsvurderinger-cfcs-haver-trusselsniveauet",
+    "CFCS-TV-PDF-cfcs-cybertruslen-mod-danmark-2024",
+    "CFCS-TV-PDF-cfcs-cybertruslen-mod-vandsektoren-2025",
+    "CFCS-TV-PDF-cybertruslen-mod-telesektoren-2025",
+    "CFCS-TV-PDF-samsik-cybertruslen-mod-rumsektoren-2025",
+    "CFCS-TV-PDF-trusselsvurdering-cybertruslen-mod-sundhedssektoren-2024",
+    "CFCS-TV-PDF-cybertruslen-mod-forskning-og-universiteter"
+  ],
+  "alertsCompleted": [],
+  "lastRun": "2026-03-23T15:33:01.122Z"
+}
