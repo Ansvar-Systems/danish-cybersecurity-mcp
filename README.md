@@ -4,7 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/%40ansvar%2Fdanish-cybersecurity-mcp.svg)](https://www.npmjs.com/package/@ansvar/danish-cybersecurity-mcp)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CI](https://github.com/Ansvar-Systems/danish-cybersecurity-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Ansvar-Systems/danish-cybersecurity-mcp/actions/workflows/ci.yml)
+[![Build](https://github.com/Ansvar-Systems/danish-cybersecurity-mcp/actions/workflows/ghcr-build.yml/badge.svg)](https://github.com/Ansvar-Systems/danish-cybersecurity-mcp/actions/workflows/ghcr-build.yml)
 
 Query Danish cybersecurity data -- regulations, decisions, and requirements from CFCS (Centre for Cyber Security) -- directly from Claude, Cursor, or any MCP-compatible client.
 
@@ -90,16 +90,18 @@ npx @ansvar/danish-cybersecurity-mcp
 
 ---
 
-## Available Tools (6)
+## Available Tools (8)
 
 | Tool | Description |
 |------|-------------|
-| `dk_cyber_search_guidance` | Full-text search across BSI guidelines and technical reports. Covers Technical Guidelines (TR series), IT-Grundschutz... |
-| `dk_cyber_get_guidance` | Get a specific BSI guidance document by reference (e.g., |
-| `dk_cyber_search_advisories` | Search BSI security advisories and alerts. Returns advisories with severity, affected products, and CVE references wh... |
-| `dk_cyber_get_advisory` | Get a specific BSI security advisory by reference (e.g., |
-| `dk_cyber_list_frameworks` | List all BSI frameworks and standard series covered in this MCP, including IT-Grundschutz Kompendium, BSI Technical G... |
+| `dk_cyber_search_guidance` | Full-text search across CFCS guidelines and technical reports. Covers CFCS guidance, NIS2-DK recommendations, and threat assessments. |
+| `dk_cyber_get_guidance` | Get a specific CFCS guidance document by reference. |
+| `dk_cyber_search_advisories` | Search CFCS security advisories and threat assessments by keyword and severity. |
+| `dk_cyber_get_advisory` | Get a specific CFCS security advisory by reference. |
+| `dk_cyber_list_frameworks` | List all CFCS frameworks and document series covered in this MCP. |
 | `dk_cyber_about` | Return metadata about this MCP server: version, data source, coverage, and tool list. |
+| `dk_cyber_list_sources` | List all data sources with provenance metadata: name, URL, last ingest date, and limitations. |
+| `dk_cyber_check_data_freshness` | Check data freshness: last ingest timestamp, document counts, and staleness status. |
 
 All tools return structured data with source references and timestamps.
 
@@ -180,8 +182,8 @@ npx @anthropic/mcp-inspector node dist/index.js   # Test with MCP Inspector
 ### Data Management
 
 ```bash
-npm run build:db       # Rebuild SQLite database from seed data
-npm run check-updates  # Check for new regulatory data
+npm run seed    # Seed SQLite database with sample data
+npm run ingest  # Ingest latest data from CFCS (cfcs.dk)
 ```
 
 ---
