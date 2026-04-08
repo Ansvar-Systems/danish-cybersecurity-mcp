@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "mcp_name": "eu.ansvar/danish-cybersecurity-mcp",
+  "jurisdiction": "DK",
+  "authority": "CFCS (Center for Cybersikkerhed — Danish Centre for Cyber Security)",
+  "authority_url": "https://www.cfcs.dk/",
+  "tool_prefix": "dk_cyber_",
+  "tools": [
+    "dk_cyber_search_guidance",
+    "dk_cyber_get_guidance",
+    "dk_cyber_search_advisories",
+    "dk_cyber_get_advisory",
+    "dk_cyber_list_frameworks",
+    "dk_cyber_about",
+    "dk_cyber_list_sources",
+    "dk_cyber_check_data_freshness"
+  ],
+  "document_types": [
+    "guidance",
+    "advisory",
+    "framework"
+  ],
+  "document_series": [
+    "CFCS",
+    "NIS2-DK",
+    "Guidance"
+  ],
+  "topics": [
+    "phishing",
+    "IoT security",
+    "password security",
+    "mobile device security",
+    "travel security",
+    "telework security",
+    "logging",
+    "NIS2",
+    "threat assessment",
+    "ransomware",
+    "critical infrastructure"
+  ],
+  "languages": ["da", "en"],
+  "update_frequency": "periodic",
+  "license": "Public government publications",
+  "limitations": [
+    "Coverage reflects last ingest run; may lag behind official publications",
+    "Some CFCS publications may require Danish language proficiency",
+    "Historical document versions may not be available",
+    "CFCS alerts (varsler) may be incomplete"
+  ]
+}

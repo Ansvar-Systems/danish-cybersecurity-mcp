@@ -1,11 +1,11 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# German Cybersecurity MCP — multi-stage Dockerfile
+# Danish Cybersecurity MCP — multi-stage Dockerfile
 # ─────────────────────────────────────────────────────────────────────────────
 # Build:  docker build -t danish-cybersecurity-mcp .
 # Run:    docker run --rm -p 3000:3000 danish-cybersecurity-mcp
 #
-# The image expects a pre-built database at /app/data/bsi.db.
-# Override with BSI_DB_PATH for a custom location.
+# The image expects a pre-built database at /app/data/cfcs.db.
+# Override with CFCS_DB_PATH for a custom location.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # --- Stage 1: Build TypeScript ---
@@ -23,7 +23,7 @@ FROM node:20-slim AS production
 
 WORKDIR /app
 ENV NODE_ENV=production
-ENV BSI_DB_PATH=/app/data/bsi.db
+ENV CFCS_DB_PATH=/app/data/cfcs.db
 
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force

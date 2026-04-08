@@ -3,11 +3,11 @@
 /**
  * CFCS Cybersecurity MCP — stdio entry point.
  *
- * Provides MCP tools for querying CFCS (Center for Cybersikkerhed für Sicherheit in der
- * Informationstechnik) guidelines, technical reports, security advisories,
- * and IT-Grundschutz frameworks.
+ * Provides MCP tools for querying CFCS (Center for Cybersikkerhed —
+ * Danish Centre for Cyber Security) guidelines, threat assessments,
+ * security advisories, and cybersecurity frameworks.
  *
- * Tool prefix: de_cyber_
+ * Tool prefix: dk_cyber_
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -43,19 +43,40 @@ try {
 
 const SERVER_NAME = "danish-cybersecurity-mcp";
 
+// --- Data freshness -----------------------------------------------------------
+
+let _ingestState: { lastRun?: string; guidanceCompleted?: string[]; advisoriesCompleted?: string[] } = {};
+try {
+  _ingestState = JSON.parse(
+    readFileSync(join(__dirname, "..", "data", ".ingest-state.json"), "utf8"),
+  ) as typeof _ingestState;
+} catch {
+  // ingest state unavailable
+}
+
+const DATA_AGE = _ingestState.lastRun ?? null;
+
+const META = {
+  disclaimer:
+    "Data sourced from CFCS (cfcs.dk). For informational use only — not regulatory or legal advice. Verify against primary sources before making compliance decisions.",
+  data_age: DATA_AGE,
+  copyright: "Content copyright CFCS (Center for Cybersikkerhed). Reproduced for research and compliance purposes.",
+  source_url: "https://www.cfcs.dk/",
+};
+
 // --- Tool definitions ---------------------------------------------------------
 
 const TOOLS = [
   {
     name: "dk_cyber_search_guidance",
     description:
-      "Full-text search across BSI guidelines and technical reports. Covers Technical Guidelines (TR series), IT-Grundschutz building blocks, BSI Standards, and recommendations. Returns matching documents with reference, title, series, and summary.",
+      "Full-text search across CFCS guidelines and technical reports. Covers CFCS guidance documents, NIS2-DK recommendations, national cybersecurity guidance, and threat assessments. Returns matching documents with reference, title, series, and summary.",
     inputSchema: {
       type: "object" as const,
       properties: {
         query: {
           type: "string",
-          description: "Search query (e.g., 'TLS Kryptographie', 'IT-Grundschutz Server', 'ISMS Sicherheitsmanagement')",
+          description: "Search query (e.g., 'phishing', 'IoT security', 'password guidelines', 'NIS2')",
         },
         type: {
           type: "string",
@@ -65,7 +86,7 @@ const TOOLS = [
         series: {
           type: "string",
           enum: ["CFCS", "NIS2-DK", "Guidance"],
-          description: "Filter by BSI series. Optional.",
+          description: "Filter by document series. Optional.",
         },
         status: {
           type: "string",
@@ -83,7 +104,7 @@ const TOOLS = [
   {
     name: "dk_cyber_get_guidance",
     description:
-      "Get a specific BSI guidance document by reference (e.g., 'BSI TR-03116', 'BSI TR-02102', 'BSI-Standard 200-1', 'SYS.1.1').",
+      "Get a specific CFCS guidance document by reference (e.g., 'CFCS-VEJ-forebyggelse-nationale-anbefalinger-logning', 'CFCS-PDF-cyberforsvar-der-virker-2023').",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -98,13 +119,13 @@ const TOOLS = [
   {
     name: "dk_cyber_search_advisories",
     description:
-      "Search BSI security advisories and alerts. Returns advisories with severity, affected products, and CVE references where available.",
+      "Search CFCS security advisories and threat assessments. Returns advisories with severity, affected products, and CVE references where available.",
     inputSchema: {
       type: "object" as const,
       properties: {
         query: {
           type: "string",
-          description: "Search query (e.g., 'kritische Schwachstelle', 'Ransomware', 'VPN')",
+          description: "Search query (e.g., 'ransomware', 'critical infrastructure', 'phishing')",
         },
         severity: {
           type: "string",
@@ -122,7 +143,7 @@ const TOOLS = [
   {
     name: "dk_cyber_get_advisory",
     description:
-      "Get a specific BSI security advisory by reference (e.g., 'BSI-CB-K24-0001').",
+      "Get a specific CFCS security advisory by reference (e.g., 'CFCS-TV-cybertruslen-trusselsvurderinger').",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -137,7 +158,7 @@ const TOOLS = [
   {
     name: "dk_cyber_list_frameworks",
     description:
-      "List all BSI frameworks and standard series covered in this MCP, including IT-Grundschutz Kompendium, BSI Technical Guideline (TR) series, and BSI Standards series.",
+      "List all CFCS frameworks and document series covered in this MCP, including CFCS guidance, NIS2-DK recommendations, and national cybersecurity frameworks.",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -147,6 +168,24 @@ const TOOLS = [
   {
     name: "dk_cyber_about",
     description: "Return metadata about this MCP server: version, data source, coverage, and tool list.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: "dk_cyber_list_sources",
+    description: "List all data sources used by this MCP server with provenance metadata: name, URL, last ingest date, scope, and known limitations.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: "dk_cyber_check_data_freshness",
+    description: "Check data freshness: returns the last ingest timestamp, document counts by category, and staleness status.",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -182,9 +221,10 @@ const GetAdvisoryArgs = z.object({
 // --- Helper ------------------------------------------------------------------
 
 function textContent(data: unknown) {
+  const payload = { _meta: META, ...(data as Record<string, unknown>) };
   return {
     content: [
-      { type: "text" as const, text: JSON.stringify(data, null, 2) },
+      { type: "text" as const, text: JSON.stringify(payload, null, 2) },
     ],
   };
 }
@@ -262,14 +302,46 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           name: SERVER_NAME,
           version: pkgVersion,
           description:
-            "CFCS (Center for Cybersikkerhed für Sicherheit in der Informationstechnik — German Federal Office for Information Security) MCP server. Provides access to CFCS technical guidelines, IT-Grundschutz building blocks, BSI Standards, and security advisories.",
+            "CFCS (Center for Cybersikkerhed — Danish Centre for Cyber Security) MCP server. Provides access to CFCS guidance documents, threat assessments, national cybersecurity recommendations, and security advisories.",
           data_source: "CFCS (https://www.cfcs.dk/)",
           coverage: {
-            guidance: "BSI Technical Guidelines (TR series), IT-Grundschutz building blocks, BSI Standards (200 series)",
-            advisories: "BSI security advisories and alerts (CB-K series)",
-            frameworks: "IT-Grundschutz Kompendium, BSI TR series, BSI Standards series",
+            guidance: "CFCS guidance documents, national recommendations, IoT security, password security, mobile security",
+            advisories: "CFCS threat assessments (trusselsvurderinger) by sector",
+            frameworks: "CFCS document series, NIS2-DK guidance",
           },
           tools: TOOLS.map((t) => ({ name: t.name, description: t.description })),
+        });
+      }
+
+      case "dk_cyber_list_sources": {
+        return textContent({
+          sources: [
+            {
+              name: "CFCS (Center for Cybersikkerhed)",
+              url: "https://www.cfcs.dk/",
+              scope: "Danish national cybersecurity guidance, threat assessments, and sector-specific advisories",
+              last_ingest: DATA_AGE,
+              license: "Public government publications",
+              limitations: "Coverage may be incomplete; some documents require manual review of primary sources",
+            },
+          ],
+        });
+      }
+
+      case "dk_cyber_check_data_freshness": {
+        const now = new Date();
+        const lastRun = DATA_AGE ? new Date(DATA_AGE) : null;
+        const ageDays = lastRun
+          ? Math.floor((now.getTime() - lastRun.getTime()) / (1000 * 60 * 60 * 24))
+          : null;
+        return textContent({
+          last_ingest: DATA_AGE,
+          age_days: ageDays,
+          stale: ageDays !== null ? ageDays > 30 : true,
+          document_counts: {
+            guidance: _ingestState.guidanceCompleted?.length ?? 0,
+            advisories: _ingestState.advisoriesCompleted?.length ?? 0,
+          },
         });
       }
 
